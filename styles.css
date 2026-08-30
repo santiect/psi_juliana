@@ -151,6 +151,12 @@ h2 { font-size: clamp(3rem, 7.2vw, 6.2rem); }
   padding: 0;
 }
 
+.power-list,
+.mission,
+.micro-list {
+  margin-top: 10px;
+}
+
 .emotion-actions button,
 .pill-row span,
 .power-list strong,

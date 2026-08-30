@@ -207,7 +207,7 @@ new p5((p) => {
 
   function drawTherapistScene() {
     const mobile = p.width < 700;
-    const x = p.width * (mobile ? .5 : .75);
+    const x = p.width * (mobile ? .5 : .8);
     const y = p.height * (mobile ? .62 : .58);
     drawPerson(x - (mobile ? 70 : 115), y + 10, mobile ? .72 : .9, "#ef3340", "adult");
     drawPerson(x + (mobile ? 58 : 65), y + 55, mobile ? .5 : .62, "#ffd400", "child");
@@ -312,14 +312,15 @@ new p5((p) => {
 
   function drawBodyMap() {
     const mobile = p.width < 700;
-    const x = p.width * (mobile ? .5 : .72);
-    const y = p.height * (mobile ? .63 : .54);
+    const x = p.width * (mobile ? .5 : .75);
+    const y = p.height * (mobile ? .66 : .58);
     drawPerson(x, y, mobile ? .82 : 1.08, "#ffd400", "child");
-    pulseCircle(x, y - 8, mobile ? 42 : 56, "#ef3340");
-    labelBubble("coração", p.width * (mobile ? .27 : .53), p.height * (mobile ? .52 : .34), "#ef3340");
-    labelBubble("barriga", p.width * (mobile ? .72 : .83), p.height * (mobile ? .52 : .35), "#ffd400");
-    labelBubble("lágrimas", p.width * (mobile ? .28 : .55), p.height * (mobile ? .82 : .72), "#0057ff");
-    labelBubble("calor", p.width * (mobile ? .72 : .86), p.height * (mobile ? .82 : .72), "#00a95c");
+    pulseCircle(x, y + (mobile ? 54 : 66), mobile ? 34 : 46, "#ef3340");
+    if (mobile) return;
+    labelBubble("coração", p.width * .62, p.height * .47, "#ef3340");
+    labelBubble("barriga", p.width * .88, p.height * .48, "#ffd400");
+    labelBubble("lágrimas", p.width * .55, p.height * .72, "#0057ff");
+    labelBubble("calor", p.width * .88, p.height * .75, "#00a95c");
   }
 
   function labelBubble(text, x, y, color) {
@@ -360,9 +361,9 @@ new p5((p) => {
   function drawBigDragon() {
     const mobile = p.width < 700;
     const breath = .06 + Math.sin(p.frameCount * .08) * .025;
-    drawDragon(p.width * (mobile ? .48 : .72), p.height * (mobile ? .62 : .56), Math.min(p.width, p.height) * (mobile ? .58 : .58), "#ef3340", breath, true);
+    drawDragon(p.width * (mobile ? .54 : .8), p.height * (mobile ? .68 : .63), Math.min(p.width, p.height) * (mobile ? .46 : .5), "#ef3340", breath, true);
     for (let i = 0; i < 5; i += 1) {
-      drawSpark(p.width * (.52 + i * .08), p.height * (.22 + (i % 2) * .48), 28 + i * 4);
+      drawSpark(p.width * (.57 + i * .075), p.height * (.32 + (i % 2) * .43), 24 + i * 4);
     }
   }
 
@@ -434,20 +435,24 @@ new p5((p) => {
   }
 
   function drawToolIcons() {
-    const x = p.width * .68;
-    const y = p.height * .5;
+    const mobile = p.width < 700;
+    if (mobile) return;
+    const x = p.width * .78;
+    const y = p.height * .61;
+    const card = 126;
+    const gap = 150;
     const items = [["respirar", "#0057ff"], ["nomear", "#ffd400"], ["ajuda", "#00a95c"]];
     items.forEach(([text, color], i) => {
-      const px = x + (i - 1) * 170;
+      const px = x + (i - 1) * gap;
       p.noStroke();
       p.fill(0, 0, 0, 40);
-      p.rect(px - 72, y - 64 + 12, 144, 144, 28);
+      p.rect(px - card / 2, y - card / 2 + 12, card, card, 28);
       p.fill(color);
-      p.rect(px - 72, y - 64, 144, 144, 28);
+      p.rect(px - card / 2, y - card / 2, card, card, 28);
       p.fill(color === "#ffd400" ? "#162033" : "#fff");
       p.textAlign(p.CENTER, p.CENTER);
       p.textStyle(p.BOLD);
-      p.textSize(22);
+      p.textSize(20);
       p.text(text, px, y + 10);
     });
   }
