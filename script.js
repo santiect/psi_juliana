@@ -15,8 +15,10 @@ let currentSlide = 0;
 let selectedEmotion = "alegria";
 let breathPhase = "idle";
 let breathRunning = false;
-let breathTimers = [];
 let breathProgress = 0;
+let breathStartAt = 0;
+let breathMood = 0;
+let breathColor = "#ef3340";
 
 const themes = ["intro", "emotions", "body", "office", "bigdragon", "breath", "tools", "finale"];
 
@@ -35,33 +37,10 @@ function showSlide(index) {
   if (themes[currentSlide] !== "breath") resetBreath();
 }
 
-function clearBreathTimers() {
-  breathTimers.forEach(clearTimeout);
-  breathTimers = [];
-}
-
 function setBreathState(phase, value, text) {
   breathPhase = phase;
   breathCount.textContent = value;
   breathInstruction.textContent = text;
-}
-
-function countdown(seconds, phase, text, done) {
-  let remaining = seconds;
-  setBreathState(phase, remaining, text);
-  breathProgress = phase === "inhale" ? .35 : phase === "hold" ? 1 : .7;
-
-  const tick = () => {
-    remaining -= 1;
-    if (remaining > 0) {
-      setBreathState(phase, remaining, text);
-      breathTimers.push(setTimeout(tick, 1000));
-      return;
-    }
-    done();
-  };
-
-  breathTimers.push(setTimeout(tick, 1000));
 }
 
 function startBreath() {
@@ -70,25 +49,22 @@ function startBreath() {
     return;
   }
   breathRunning = true;
+  breathStartAt = performance.now();
+  breathProgress = 0;
+  breathMood = 0;
+  breathColor = "#ef3340";
   breathButton.textContent = "Parar";
-  countdown(4, "inhale", "Puxa o ar como um dragão acordando.", () => {
-    countdown(7, "hold", "Guarda o fogo com cuidado.", () => {
-      countdown(8, "exhale", "Solta uma fumacinha bem devagar.", () => {
-        setBreathState("done", "✓", "Muito bem. O dragão ficou calminho.");
-        breathProgress = 0;
-        breathRunning = false;
-        breathButton.textContent = "Fazer de novo";
-      });
-    });
-  });
+  setBreathState("inhale", "4", "Inspira: o dragão bravo vai ficando lilás.");
 }
 
 function resetBreath() {
-  clearBreathTimers();
   breathRunning = false;
   breathProgress = 0;
+  breathMood = 0;
+  breathStartAt = 0;
+  breathColor = "#ef3340";
   breathButton.textContent = "Começar respiração";
-  setBreathState("idle", "4", "Puxa o ar para guardar coragem.");
+  setBreathState("idle", "4", "O dragão começa bravo. Vamos acalmar juntos?");
 }
 
 document.querySelectorAll("[data-emotion]").forEach((button) => {
@@ -369,9 +345,8 @@ new p5((p) => {
 
   function drawBreathingDragon() {
     const mobile = p.width < 700;
-    const target = breathPhase === "inhale" || breathPhase === "hold" ? 1 : breathPhase === "exhale" ? .15 : 0;
-    breathProgress = p.lerp(breathProgress, target, .045);
-    drawDragon(p.width * (mobile ? .34 : .58), p.height * (mobile ? .46 : .46), Math.min(p.width, p.height) * (mobile ? .38 : .48), "#00a95c", breathProgress, false);
+    updateBreathTimeline();
+    drawDragon(p.width * (mobile ? .34 : .58), p.height * (mobile ? .46 : .46), Math.min(p.width, p.height) * (mobile ? .38 : .48), breathColor, breathProgress, false, breathMood);
     if (breathPhase === "exhale") {
       for (let i = 0; i < 5; i += 1) {
         const drift = (p.frameCount * 2 + i * 34) % 170;
@@ -382,7 +357,63 @@ new p5((p) => {
     }
   }
 
-  function drawDragon(x, y, size, color, breath, intense) {
+  function updateBreathTimeline() {
+    if (!breathRunning) {
+      if (breathPhase === "done") {
+        breathProgress = 0;
+        breathMood = 1;
+        breathColor = "#00a95c";
+      } else {
+        breathProgress = 0;
+        breathMood = 0;
+        breathColor = "#ef3340";
+      }
+      return;
+    }
+
+    const inhaleMs = 4000;
+    const holdMs = 7000;
+    const exhaleMs = 8000;
+    const totalMs = inhaleMs + holdMs + exhaleMs;
+    const elapsed = performance.now() - breathStartAt;
+
+    if (elapsed >= totalMs) {
+      breathRunning = false;
+      breathButton.textContent = "Fazer de novo";
+      setBreathState("done", "✓", "Muito bem. O dragão ficou verde e alegre.");
+      breathProgress = 0;
+      breathMood = 1;
+      breathColor = "#00a95c";
+      return;
+    }
+
+    if (elapsed < inhaleMs) {
+      const t = p.constrain(elapsed / inhaleMs, 0, 1);
+      breathProgress = t;
+      breathMood = t * .45;
+      breathColor = p.lerpColor(p.color("#ef3340"), p.color("#b779ff"), t).toString();
+      setBreathState("inhale", Math.max(1, Math.ceil((inhaleMs - elapsed) / 1000)), "Inspira: o dragão bravo vai ficando lilás.");
+      return;
+    }
+
+    if (elapsed < inhaleMs + holdMs) {
+      const phaseElapsed = elapsed - inhaleMs;
+      breathProgress = 1;
+      breathMood = .45;
+      breathColor = "#b779ff";
+      setBreathState("hold", Math.max(1, Math.ceil((holdMs - phaseElapsed) / 1000)), "Segura: ele guarda o fogo com cuidado.");
+      return;
+    }
+
+    const phaseElapsed = elapsed - inhaleMs - holdMs;
+    const t = p.constrain(phaseElapsed / exhaleMs, 0, 1);
+    breathProgress = 1 - t;
+    breathMood = .45 + t * .55;
+    breathColor = p.lerpColor(p.color("#b779ff"), p.color("#00a95c"), t).toString();
+    setBreathState("exhale", Math.max(1, Math.ceil((exhaleMs - phaseElapsed) / 1000)), "Solta devagar: ele fica verde e alegre.");
+  }
+
+  function drawDragon(x, y, size, color, breath, intense, mood = intense ? 0 : 1) {
     p.push();
     p.translate(x, y);
     const s = size / 420;
@@ -408,8 +439,12 @@ new p5((p) => {
     p.noFill();
     p.stroke("#162033");
     p.strokeWeight(5);
-    p.arc(150, -20, 42, 26, 0, p.PI);
-    if (intense) {
+    if (mood < .35) {
+      p.line(130, -12, 170, -12);
+    } else {
+      p.arc(150, -20, 42, 26 + mood * 16, 0, p.PI);
+    }
+    if (intense || mood < .35) {
       p.stroke("#162033");
       p.strokeWeight(7);
       p.line(108, -66, 136, -54);
