@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Psicologia Infantil | Dragão Calminho</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="presentation">
+    <div id="canvasHost" aria-hidden="true"></div>
+    <div class="progress"><span id="progressBar"></span></div>
+
+    <section class="slide active" data-theme="intro" data-notes="Oi, pessoal! Eu sou psicóloga infantil. Isso quer dizer que eu converso, brinco, desenho e escuto crianças para ajudar quando os sentimentos ficam grandes demais.">
+      <p class="eyebrow">Mostra das profissões</p>
+      <h1>Psicóloga<br>infantil</h1>
+      <p class="subtitle">Eu ajudo crianças a entenderem os sentimentos.</p>
+    </section>
+
+    <section class="slide" data-theme="emotions" data-notes="Todo mundo sente emoções. Criança sente, adulto sente, professora sente, papai e mamãe também sentem. Emoção não é coisa errada. Ela é como um recadinho do nosso corpo.">
+      <p class="eyebrow">Todo mundo sente</p>
+      <h2>As emoções dão recados</h2>
+      <div class="emotion-actions" aria-label="Escolha uma emoção">
+        <button type="button" data-emotion="alegria">Alegria</button>
+        <button type="button" data-emotion="tristeza">Tristeza</button>
+        <button type="button" data-emotion="raiva">Raiva</button>
+        <button type="button" data-emotion="medo">Medo</button>
+      </div>
+      <p class="subtitle compact" id="emotionPrompt">Escolha uma emoção e faça essa expressão comigo.</p>
+    </section>
+
+    <section class="slide" data-theme="body" data-notes="Às vezes a emoção aparece no corpo. O medo pode fazer o coração bater rápido. A tristeza pode trazer lágrimas. A raiva pode deixar o corpo quente. A preocupação pode apertar a barriga.">
+      <p class="eyebrow">O corpo também fala</p>
+      <h2>Onde eu sinto isso?</h2>
+      <ul class="micro-list">
+        <li>coração rápido</li>
+        <li>barriga apertada</li>
+        <li>vontade de chorar</li>
+        <li>corpo quentinho</li>
+      </ul>
+    </section>
+
+    <section class="slide" data-theme="office" data-notes="A psicóloga infantil não dá bronca e não adivinha pensamento. Ela escuta, brinca, conversa e ajuda a criança a descobrir o nome do que sente e jeitos de cuidar disso.">
+      <p class="eyebrow">Minha profissão</p>
+      <h2>O que uma psicóloga infantil faz?</h2>
+      <div class="pill-row">
+        <span>escuta</span>
+        <span>brinca</span>
+        <span>desenha</span>
+        <span>ajuda</span>
+      </div>
+      <p class="subtitle compact">É como investigar emoções junto com a criança.</p>
+    </section>
+
+    <section class="slide" data-theme="bigdragon" data-notes="Às vezes a emoção fica gigante. A raiva vira grito, o medo dá vontade de fugir, a tristeza dá vontade de ficar quietinho. Mas a emoção não é inimiga. Ela está tentando avisar alguma coisa.">
+      <p class="eyebrow">Quando fica gigante</p>
+      <h2>A emoção pode virar um dragão</h2>
+      <p class="subtitle compact">Ele assusta, mas também pode aprender a se acalmar.</p>
+    </section>
+
+    <section class="slide breath-slide" data-theme="breath" data-notes="Agora vamos aprender a respiração do Dragão Calminho. Puxa o ar como um dragão acordando por quatro. Guarda o fogo com cuidado por sete. Solta uma fumacinha devagar por oito.">
+      <p class="eyebrow">Técnica 4-7-8</p>
+      <h2>Respiração do<br>Dragão Calminho</h2>
+      <div class="breath-panel">
+        <div class="breath-count" id="breathCount">4</div>
+        <button type="button" class="primary" id="breathButton">Começar respiração</button>
+        <p id="breathInstruction">Puxa o ar para guardar coragem.</p>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="tools" data-notes="Quando uma emoção forte aparece, temos três poderes. Respirar para o corpo desacelerar. Dar nome: estou com raiva, medo, tristeza ou alegria. E pedir ajuda para alguém de confiança.">
+      <p class="eyebrow">Três poderes</p>
+      <h2>Jeitos de cuidar das emoções</h2>
+      <div class="power-list">
+        <strong>Respirar</strong>
+        <strong>Dar nome</strong>
+        <strong>Pedir ajuda</strong>
+      </div>
+    </section>
+
+    <section class="slide" data-theme="finale" data-notes="Agora vocês têm uma missão. Quando uma emoção forte aparecer, lembrem: respirar, dar nome ao sentimento e falar com alguém de confiança. Pedir ajuda é uma coisa muito corajosa.">
+      <p class="eyebrow">Missão final</p>
+      <h2>Eu posso sentir,<br>falar e pedir ajuda.</h2>
+      <ol class="mission">
+        <li>respiro devagar</li>
+        <li>digo o nome dela</li>
+        <li>peço ajuda</li>
+      </ol>
+    </section>
+
+    <aside class="speaker-notes" id="speakerNotes">
+      <strong>Fala sugerida</strong>
+      <p id="notesText"></p>
+    </aside>
+
+    <nav class="controls" aria-label="Controles da apresentação">
+      <button id="prevBtn" type="button" aria-label="Slide anterior">‹</button>
+      <span id="slideCounter">1 / 8</span>
+      <button id="nextBtn" type="button" aria-label="Próximo slide">›</button>
+      <button id="notesBtn" type="button">Roteiro</button>
+    </nav>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.9.4/lib/p5.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
