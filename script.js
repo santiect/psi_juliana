@@ -19,18 +19,31 @@ let breathProgress = 0;
 let breathStartAt = 0;
 let breathMood = 0;
 let breathColor = "#ef3340";
+let mobileMode = false;
+let deckIndexes = [];
 
 const themes = ["intro", "emotions", "body", "office", "bigdragon", "breath", "tools", "finale"];
+const desktopIndexes = themes.map((_, index) => index);
+const mobileIndexes = [0, 1, 5, 7];
+
+function isMobileLayout() {
+  return window.matchMedia("(max-width: 760px)").matches;
+}
 
 function showSlide(index) {
-  currentSlide = Math.max(0, Math.min(slides.length - 1, index));
+  mobileMode = isMobileLayout();
+  deckIndexes = mobileMode ? mobileIndexes : desktopIndexes;
+  const position = Math.max(0, Math.min(deckIndexes.length - 1, index));
+  currentSlide = deckIndexes[position];
+
   slides.forEach((slide, slideIndex) => {
     slide.classList.toggle("active", slideIndex === currentSlide);
+    slide.classList.toggle("mobile-hidden", mobileMode && !deckIndexes.includes(slideIndex));
   });
-  progressBar.style.width = `${((currentSlide + 1) / slides.length) * 100}%`;
-  slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
-  prevBtn.disabled = currentSlide === 0;
-  nextBtn.disabled = currentSlide === slides.length - 1;
+  progressBar.style.width = `${((position + 1) / deckIndexes.length) * 100}%`;
+  slideCounter.textContent = `${position + 1} / ${deckIndexes.length}`;
+  prevBtn.disabled = position === 0;
+  nextBtn.disabled = position === deckIndexes.length - 1;
   notesText.textContent = slides[currentSlide].dataset.notes || "";
   history.replaceState(null, "", `#slide-${currentSlide + 1}`);
 
@@ -76,27 +89,39 @@ document.querySelectorAll("[data-emotion]").forEach((button) => {
   });
 });
 
-prevBtn.addEventListener("click", () => showSlide(currentSlide - 1));
-nextBtn.addEventListener("click", () => showSlide(currentSlide + 1));
+function currentPosition() {
+  return deckIndexes.indexOf(currentSlide);
+}
+
+prevBtn.addEventListener("click", () => showSlide(currentPosition() - 1));
+nextBtn.addEventListener("click", () => showSlide(currentPosition() + 1));
 breathButton.addEventListener("click", startBreath);
 notesBtn.addEventListener("click", () => notesPanel.classList.toggle("open"));
 
 document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowRight" || event.key === " ") {
     event.preventDefault();
-    showSlide(currentSlide + 1);
+    showSlide(currentPosition() + 1);
   }
   if (event.key === "ArrowLeft") {
     event.preventDefault();
-    showSlide(currentSlide - 1);
+    showSlide(currentPosition() - 1);
   }
   if (event.key.toLowerCase() === "r") {
     notesPanel.classList.toggle("open");
   }
 });
 
-const initialSlide = Number((location.hash.match(/\d+/) || [1])[0]) - 1;
-showSlide(initialSlide);
+function positionFromHash() {
+  mobileMode = isMobileLayout();
+  deckIndexes = mobileMode ? mobileIndexes : desktopIndexes;
+  const actualSlide = Number((location.hash.match(/\d+/) || [1])[0]) - 1;
+  const found = deckIndexes.indexOf(actualSlide);
+  return found >= 0 ? found : 0;
+}
+
+window.addEventListener("resize", () => showSlide(Math.max(0, currentPosition())));
+showSlide(positionFromHash());
 
 new p5((p) => {
   let particles = [];
@@ -171,6 +196,11 @@ new p5((p) => {
   }
 
   function drawScene(theme) {
+    if (p.width < 700) {
+      if (theme === "breath") drawBreathingDragon();
+      return;
+    }
+
     if (theme === "intro") drawTherapistScene();
     if (theme === "emotions") drawEmotionFaces();
     if (theme === "body") drawBodyMap();
