@@ -245,6 +245,7 @@ h2 { font-size: clamp(3rem, 7.2vw, 6.2rem); }
   justify-items: center;
   text-align: center;
   padding-top: 42px;
+  padding-bottom: 170px;
 }
 
 .breath-slide h2 {
@@ -255,7 +256,7 @@ h2 { font-size: clamp(3rem, 7.2vw, 6.2rem); }
   display: grid;
   justify-items: center;
   gap: 12px;
-  margin-top: min(32vh, 210px);
+  margin-top: min(25vh, 170px);
 }
 
 .breath-count {
@@ -425,11 +426,27 @@ h2 { font-size: clamp(3rem, 7.2vw, 6.2rem); }
     min-height: 54px;
   }
 
-  .breath-slide { padding-top: 42px; }
+  .breath-slide {
+    padding-top: 42px;
+    padding-bottom: 132px;
+    justify-items: start;
+  }
 
   .breath-panel {
     width: 100%;
-    margin-top: min(34vh, 260px);
+    margin-top: min(25vh, 205px);
+    justify-items: stretch;
+  }
+
+  .breath-count {
+    justify-self: center;
+  }
+
+  .breath-panel .primary,
+  #breathInstruction {
+    width: 100%;
+    max-width: 360px;
+    justify-self: center;
   }
 
   .controls {
